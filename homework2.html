@@ -25,7 +25,6 @@
             width: 500px;
             height: 300px;
         }
-
     </style>
 </head>
 
@@ -37,19 +36,8 @@
         <br>
 
         <h5>이 양초는 사실 특별한 힘을 가지고 있어요. 양초를 키고 소원을 빌면 짜자잔 뭐든지 이뤄지게 된답니다. 하나 사가세요! 대나무 향이 아주 좋아요.</h5>
-      
 
-
-      
-         <!-- 달러 원환율 추가 -->
-       <hd>
-        <span id="rate" style="color:blue"> 달러-원 환율</span>
-        </hd>
-       
-       
-       
-       
-       <br>
+        <br>
 
         <div class="input-group mb-3">
             <div class="input-group-prepend">
@@ -105,31 +93,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-
-    <script type="text/javascript">
-
-    $(document).ready(function(){
-
-	alert('다 로딩됐다!')
-    // 여기에 환율 API Ajax 요청을 하면 되겠죠?
-    $.ajax({
-    type: "GET", // GET 방식으로 요청한다.
-    url: "https://api.manana.kr/exchange/rate.json",
-    data: {}, // 요청하면서 함께 줄 데이터 (GET 요청시엔 비워두세요)
-
-    success: function(response){ // 서버에서 준 결과를 response라는 변수에 담음
-    console.log(response) // 서버에서 준 결과를 이용해서 나머지 코드를 작성
-	alert('Ajax 완료')
-    let rate = response[1]["rate"];
-    document.all("rate").innerHTML= rate
-    }
-    })
-
-    
-    });
-
-    </script>
-
 </body>
 
 </html>
