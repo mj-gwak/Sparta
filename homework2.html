@@ -15,6 +15,54 @@
 
     <title>스파르타코딩클럽 | 부트스트랩 연습하기</title>
 
+   <script>
+        function q1() {
+
+            let bool = true;
+
+            let value1 = $('#input-q1').val();
+            if (value1 == '') {
+                alert('이름을 입력하세요!');
+                bool = false;
+            } 
+
+            let value2 = $('#inputGroupSelect03').val();
+            if (value2 == '') {
+                alert('수량을 선택하세요!');
+                bool = false;
+            }
+
+            let value3 = $('#address').val();
+            if (value3 == '') {
+                alert('주소를 입력하세요!');
+                bool = false;
+            } 
+
+            let value4 = $('#phoneNumber').val();
+	        var regExp = /^01(?:0|1|[6-9])-(?:\d{3}|\d{4})-\d{4}$/;
+	        if (!regExp.test(value4)){
+                alert('전화번호 형식을 000-0000-0000 으로 입력해주세요')
+                bool = false;
+            }
+
+            if (bool) {
+                //true 면 데이터를 서버로 보낸다
+                //DB에 저장한다
+                //다음페이지에 뿌린다
+                location.href="C:\\Users\\mj\\Desktop\\Sparta\\homework3.html";
+
+            }
+
+        }
+
+        // 핸드폰 번호 체크 정규식
+
+
+
+   </script>
+
+
+
     <style>
         .wrap {
             width: 500px;
@@ -43,20 +91,22 @@
             <div class="input-group-prepend">
                 <button type="button">주문자이름</button>
             </div>
-            <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
-        </div>
 
+            <input id="input-q1" type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+            
+        </div>
+    
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <button type="button">수량</button>
             </div>
             <select class="custom-select" id="inputGroupSelect03">
-                <option value="1">--수량을 선택하세요 --</option>
-                <option value="2">1</option>
-                <option value="3">2</option>
+                <option value="">--수량을 선택하세요 --</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
                 <option value="3">3</option>
-                <option value="3">4</option>
-                <option value="3">5</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
             </select>
         </div>
 
@@ -64,23 +114,25 @@
             <div class="input-group-prepend">
                 <button type="button">주소</button>
             </div>
-            <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+            <input id="address" type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
         </div>
 
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <button type="button">전화번호</button>
             </div>
-            <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+            <input id="phoneNumber" type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
         </div>
        
         <div>
         <text-align:center;>
-        <button class="btn btn-primary" type="submit">주문하기</button>
+        <button id="submitBtn" class="btn btn-primary" type="submit" onclick="q1();" disa>주문하기</button>
         </div>
 
 
     </div>
+
+
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
