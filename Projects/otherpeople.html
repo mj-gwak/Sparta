@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숙제 | 원페이지 쇼핑몰</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        .mytitle {
+            width: 500px;
+            height: 200px;
+            /* 아래 코드는 배경 이미지 설정 및 정렬코드다 */
+            background-image: url("https://kukka.kr/media/images/02-2_Flowers_seasonal/38_butterflyranunculus/1_1.jpg");
+            background-position: center;
+            background-size: cover;
+
+            border-radius: 10px;
+            padding-top: 30px;
+
+        }
+
+        .text1 {
+            color: #55585c;
+            margin: 20px auto;
+            width: 500px;
+            text-align: left;
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+
+        .wrap {
+            margin: 10px auto;
+            width: 500px;
+        }
+
+        .b1 {
+            margin: 40px auto;
+            width: 500px;
+            text-align: center;
+        }
+
+        .info-temp {
+            color: blue;
+        }
+    </style>
+
+    <!-- jQuery를 import 합니다 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script>
+        $(document).ready(function () {
+            alert('다 로딩됐다!')
+            $.ajax({
+                type: "GET",
+                url: "https://api.manana.kr/exchange/rate.json",
+                data: {},
+                success: function (response) {
+                    for (let i = 0; i < response.length; i++) {
+                        if (response[i]['name'] == 'USDKRW=X') { $('#exchange').text(response[i]['rate']) }
+                    }
+                }
+            })
+
+        });
+    </script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#orders-box').html('');
+            listing();
+        });
+
+        function oders() {
+            let name = $('#q1').val();
+            let op = $('#option_group').val();
+            let address = $('#address1').val();
+            let phone = $('#phone2').val();
+            // 2. 제목, 저자, 리뷰 중 하나라도 입력하지 않았을 경우 alert를 띄웁니다.
+            if (name == '') {
+                alert('주문자 명을 입력해주세요');
+                $('#q1').focus();
+                return;
+            } else if (op == '') {
+                alert('기간을 선택해주세요');
+                $('#option_group').focus();
+                return;
+            } else if (address == '') {
+                alert('주소를 입력해주세요');
+                $('#address1').focus();
+                return;
+           }  else if (phone == '') {
+                alert('전화번호를 입력해주세요');
+                $('#phone2').focus();
+                return;
+           } 
+
+            // 3. POST /oders 에 저장을 요청합니다.
+            $.ajax({
+                type: 'POST', // 타입을 작성합니다.
+                url: '/oders', // url을 작성합니다.
+                data: {  name_give: name, op_give: op, address_give: address, phone_give: phone }, // data를 작성합니다. },
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert(response['msg']);
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+
+        function listing() {
+            // 1. 리뷰 목록을 서버에 요청하기
+            // 2. 요청 성공 여부 확인하기
+            // 3. 요청 성공했을 때 리뷰를 올바르게 화면에 나타내기
+            $.ajax({
+                type: "GET",
+                url: "/oders",
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let oders = response['oders'];
+                        for (let i = 0; i < oders.length; i++) {
+                            make_table(oders[i]['row'], oders[i]['name'], oders[i]['op'], oders[i]['address'], oders[i]['phone'] )
+                        }
+                        // 2. 성공했을 때 리뷰를 올바르게 화면에 나타내기
+                    } else {
+                        alert('주문을 받아오지 못했습니다');
+                    }
+                }
+            });
+        }
+        function make_table(row, name, op, address, phone) {
+            let temp_html = `<tr>
+                        <td>${row}</td>
+                        <td>${name}</td>
+                        <td>${op}</td>
+                        <td>${address}</td>
+                        <td>${phone}</td>
+                    </tr>`;
+            $('#orders-box').append(temp_html);
+        }
+    </script>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="mytitle"> </div>
+
+        <div class="text1">
+            <span style="font-size: 18pt;">나를 위한 꽃선물</span><span style="font-size: 13pt"> 월 1회 3만원</span>
+            <br>
+            <p>
+                <span style="font-size: 13pt">나를 위한 꽃을 정기구독 해봅시다!</span>
+            </p>
+        </div>
+        <div class="info-temp">
+            달러-원 환율 :
+            <span id="exchange">1225.7</span>
+        </div>
+        <div class="text1">
+            <span style="font-size: 18pt;">주문하기</span>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">주문자 성함</span>
+            </div>
+            <input id="q1" type="text" class="form-control" placeholder="이름" aria-label="name"
+                aria-describedby="basic-addon1">
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">주문옵션</label>
+            </div>
+            <select class="custom-select" id="option_group">
+                <option selected value>=== 기간 설정 ===</option>
+                <option value="1">1개월</option>
+                <option value="2">2개월</option>
+                <option value="3">3개월</option>
+            </select>
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="order_address">주소</span>
+            </div>
+            <textarea id="address1" class="form-control" placeholder="주소기입 우편번호 포함"
+                aria-label="With textarea"></textarea>
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="order_phone">전화번호</span>
+            </div>
+            <input id="phone2" type="text" class="form-control" placeholder="010-****-****" aria-label="number"
+                aria-describedby="basic-addon1">
+        </div>
+
+        <div class="b1">
+            <button onclick="oders()" type="button" class="btn btn-primary">주문하기</button>
+        </div>
+        <div class="orders">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">이름</th>
+                        <th scope="col">기간</th>
+                        <th scope="col">주소</th>
+                        <th scope="col">전화번호</th>
+                    </tr>
+                </thead>
+                <tbody id = "orders-box">
+                    <div class="orders">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">이름</th>
+                                    <th scope="col">기간</th>
+                                    <th scope="col">주소</th>
+                                    <th scope="col">전화번호</th>
+                                </tr>
+                            </thead>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+
+</html>

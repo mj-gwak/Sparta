@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title> PIC Guam | 공식홈페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kirang+Haerang&display=swap" rel="stylesheet">
+    <!-- jQuery를 import 합니다 -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <style>
+        .all {
+            text-align: center;
+            margin: 50px auto;
+            width: 500px;
+            font-family: 'Impact', fantasy;
+            
+        }
+
+        .설명 {
+            font-family: 'Georgia', Serif;
+            font-size: 15px;
+        }
+
+        .exchange-rate {
+            text-align: left;
+            color: black
+        }
+
+        .orderlist {
+            text-align: center;
+            margin: 100px auto;
+        }
+    </style>
+    <style type="text/css">
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 75px;
+            align-items: center;
+            align-self: center;
+        }
+
+        td,
+        th {
+            padding: 10px;
+            margin: 10px;
+            width: max-content;
+            border-bottom: 1px solid;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "https://api.manana.kr/exchange/rate.json",
+                data: {},
+                success: function (response) {
+                    let exchange_rate = response[1]["rate"];
+                    $('#usdkrw').append(exchange_rate);
+                }
+            })
+        });
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#order-list').html('');
+            listing();
+        });
+
+        function make_order() {
+            let order_name = $('#ordername').val();
+            let order_quantity = $('#quantity').val();
+            let order_duration = $('#duration').val();
+            let order_category = $('#category').val();
+            let order_phoneno = $('#phoneno').val();
+
+            if (order_name == '') {
+                alert('이름을 입력하세요')
+            } else if (order_quantity == '0') {
+                alert('수량을 선택하세요')
+            } else if (order_duration == '0') {
+                alert('숙박기간을 선택하세요')
+            } else if (order_category == '0') {
+                alert('룸타입를 입력하세요')
+            } else if (order_phoneno == '') {
+                alert('전화번호를 입력하세요')
+            } else {
+                if (order_phoneno.includes('-')) {
+
+                    if (order_phoneno.length == '13') {
+                        let phoneno1 = order_phoneno.split('-')[0];
+                        let phoneno2 = order_phoneno.split('-')[1];
+                        let phoneno3 = order_phoneno.split('-')[2];
+
+                        let regExp = /^\d{3}-\d{3,4}-\d{4}$/;
+                        if (regExp.test(order_phoneno)) {
+                            let order_temp_html = `<tr><td>${order_name}</td> <td>${order_quantity}</td> <td>${order_duration}</td><td>${order_category}</td><td>${order_phoneno}</td></tr>`
+                            $('#order-list').append(order_temp_html);
+                            $('#ordername').val('');
+                            $('#quantity').val('');
+                            $('#duration').val('');
+                            $('#category').val('');
+                            $('#phoneno').val('');
+
+                            $.ajax({
+                                type: 'POST', // 타입을 작성합니다.
+                                url: '/orders', // url을 작성합니다.
+                                data: { ordername_give: order_name, orderquantity_give: order_quantity, orderduration_give: order_duration, ordercategory_give: order_category, order_phoneno : phoneno },
+                                success: function (response) {
+                                    if (response['result'] == 'success') {
+                                        alert(response['msg']);
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        } else {
+                            alert('전화번호 입력 형식이 틀립니다.010-0000-0000으로 입력해주세요')
+                        }
+                    } else {
+                        alert('전화번호 입력 형식이 틀립니다.010-0000-0000으로 입력해주세요')
+                    }
+                } else {
+                    alert('전화번호 입력 형식이 틀립니다.010-0000-0000으로 입력해주세요')
+                }
+            }
+
+        }
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/orders",
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let orders = response['orders'];
+                        for (let i = 0; i < orders.length; i++) {
+                            makeorders(orders[i]['order_name'], orders[i]['order_quantity'], orders[i]['order_duration'], orders[i]['order_category'], orders[i]['order_phoneno']);
+                        }
+                    }
+                    else {
+                        alert('리스트를 받아오지 못했습니다');
+                    }
+                }
+            });
+        }
+
+        function makeorders(order_name, order_quantity, order_duration, order_category, order_phoneno) {
+            let temp_html = `<tr>
+                        <td>${order_name}</td>
+                        <td>${order_quantity}</td>
+                        <td>${order_duration}</td>
+                        <td>${order_category}</td>
+                        <td>${order_phoneno}</td>
+                    </tr>`;
+            $('#order-list').append(temp_html);
+        }
+
+    </script>
+
+
+</head>
+
+<body>
+
+    <div class="all">
+
+        <img style="width: 500px ;" src="https://lh3.googleusercontent.com/proxy/gaucrob7zO27-q8GDP21ZqzZ8jyGNIArAb9bS_0EYQnSRgOrRCo2TWtx9tAcgw_YrsTL3XiayFWQDPTjOOwe8l8cfkuboHL8Daca" />
+        <p>
+            <span style="font-size: 25px;"> 휴가, 그 이상의 모든 것. 클럽 리조트 PIC </span> 
+            <br>
+            <span style="font-size: 20px;"> 성인 : 799,000원~, 아동 : 399,000원 </SPAN> 
+                
+            <p>
+                <p></p>
+                <div class="설명">
+                    <span> 자세한 문의사항은 홈페이지 Q&A를 활용하세요!!
+                    </span>
+                </div>
+            </p>
+
+            <p>
+                <div class="exchange-rate">
+
+                    <div id="usdkrw"> 달러-원 환율:
+                    </div>
+                </div>
+            </p>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"> 예약자 이름 </span>
+                </div>
+                <input id="ordername" type="text" class="form-control" aria-label="Default"
+                    aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">수량</label>
+                </div>
+                <select class="custom-select" id="quantity">
+                    <option value="0" selected> - 수량을 입력해주세요 - </option>
+                    <option value="1">성인2 + 아동 1</option>
+                    <option value="1">성인2 + 아동 2</option>
+                    <option value="1">성인2 + 아동 3</option>
+                    <option value="1">성인1 + 아동 1</option>
+                    <option value="1">성인1 + 아동 2</option>
+                    <option value="1">성인1 + 아동 3</option>
+                </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"> 숙박기간 </span>
+                </div>
+                <select class="custom-select" id="duration">
+                    <option value="0" selected> - 숙박기간을 입력 해주세요 - </option>
+                    <option value="1">3박</option>
+                    <option value="2">4박</option>
+                    <option value="3">5박</option>
+                    <option value="3">6박</option>
+                    <option value="3">7박</option>
+                </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"> 룸 카테고리 </span>
+                </div>
+                <select class="custom-select" id="quantity">
+                    <option value="0" selected> - 룸 타입을 설정해 주세요.- </option>
+                    <option value="1">슈페리어</option>
+                    <option value="2">디럭스</option>
+                    <option value="3">스위트</option>
+                    <option value="3">PIC 키즈룸</option>
+                </select>
+            </div>
+
+
+
+
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"> 대표 전화번호 </span>
+                </div>
+                <input id="phoneno" class="form-control" aria-label="Default"
+                    aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <button id="add-order-info" onclick="make_order()" type="button" class="btn btn-primary btn-lg"> 주문하기
+            </button>
+
+            <ul></ul>
+            <table>
+                <thead>
+                    <tr>
+                        <td>이름</td>
+                        <td>수량</td>
+                        <td>숙박기간</td>
+                        <td>룸 카테고리</td>
+                        <td>예약자 전화번호</td>
+                    </tr>
+                </thead>
+                <tbody id="order-list">
+                </tbody>
+            </table>
+
+</html>
